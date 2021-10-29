@@ -3,7 +3,7 @@ const path = require('path')
 module.exports = {
     mode: 'development',
     entry: './src/index.ts',
-    devtool: 'eval',
+    devtool: 'inline-source-map',
     devServer: {
         static: {
             directory: path.join(__dirname, 'docs'),

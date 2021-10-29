@@ -1,5 +1,5 @@
 import Vec from './Vec'
-import Object from './Object'
+import { SolidBodyObject, ColliderObject } from './Object'
 import Engine from './Engine'
 import { SphereCollider, PlaneCollider } from './Collider'
 import {
@@ -9,7 +9,8 @@ import {
 
 export default {
     Vec,
-    Object,
+    SolidBodyObject,
+    ColliderObject,
     Engine,
     SphereCollider,
     PlaneCollider,

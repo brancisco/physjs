@@ -1,9 +1,8 @@
 import Vec from './Vec'
-import Object from './Object'
 
-export default interface Collision {
-    objectA: Object;
-    objectB: Object;
+export default interface Collision<T> {
+    objectA: T;
+    objectB: T;
     a: Vec;
     b: Vec;
     depth: number;

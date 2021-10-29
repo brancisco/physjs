@@ -1,6 +1,6 @@
-import Object from './Object'
 import Vec from './Vec'
 import Collision from './Collision'
+import { ColliderObject, SolidBodyObject } from './Object'
 
 
 export class Collider {
@@ -10,10 +10,10 @@ export class Collider {
         this.object = object
     }
 
-    test (collider: SphereCollider):Collision 
-    test (collider: PlaneCollider):Collision 
+    test (collider: SphereCollider):Collision<ColliderObject> 
+    test (collider: PlaneCollider):Collision<ColliderObject>
 
-    test (collider: Collider): Collision {
+    test (collider: Collider): Collision<ColliderObject> {
         if (collider instanceof SphereCollider) {
             console.log(this.constructor.name)
         } else if (collider instanceof PlaneCollider) {
@@ -39,7 +39,7 @@ export class SphereCollider extends Collider {
     constructor (object: any) {
         super(object)
     }
-    test (collider: Collider): Collision | undefined {
+    test (collider: Collider): Collision<ColliderObject> | undefined {
         if (collider instanceof SphereCollider) {
             const diff = Vec.sub(collider.object.pos, this.object.pos)
             const dist = diff.mag()
@@ -76,7 +76,7 @@ export class PlaneCollider extends Collider {
         super(object)
     }
 
-    test (collider: Collider): Collision | undefined {
+    test (collider: Collider): Collision<ColliderObject> | undefined {
         if (collider instanceof SphereCollider) {
             console.log(this.constructor.name)
         } else if (collider instanceof PlaneCollider) {
