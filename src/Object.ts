@@ -1,16 +1,39 @@
 import Vec from './Vec'
 import { Collider } from './Collider'
 import Quaternion from './Quaternion'
+import Transform from './Transform'
 
 export class ColliderObject {
     collider?: Collider;
-    pos: Vec;
-    scale: Vec;
     mass: number;
-    rot: Quaternion;
+    transform: Transform;
     constructor () {
-        this.pos = new Vec()
-        this.rot = new Quaternion()
+        this.transform = new Transform()
+        this.mass = Number.POSITIVE_INFINITY
+    }
+
+    get scale (): Vec {
+        return this.transform.scale
+    }
+
+    get pos (): Vec {
+        return this.transform.pos
+    }
+
+    get rot (): Quaternion {
+        return this.transform.rot
+    }
+
+    set scale (scale: Vec) {
+        this.transform.scale = scale
+    }
+
+    set pos (pos: Vec) {
+        this.transform.pos = pos
+    }
+
+    set rot (rot: Quaternion) {
+        this.transform.rot = rot
     }
 }
 

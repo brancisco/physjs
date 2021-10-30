@@ -47,10 +47,10 @@ export class SphereCollider extends Collider {
         if (collider instanceof SphereCollider) {
             const diff = Vec.sub(collider.object.pos, this.object.pos)
             const dist = diff.mag()
-            if (dist < this.object.r + collider.object.r) {
+            if (dist < this.object.scale[0] + collider.object.scale[0]) {
                 const normal = diff.normal()
-                const a = Vec.add(this.object.pos, Vec.mult(normal, this.object.r))
-                const b = Vec.sub(collider.object.pos, Vec.mult(normal, collider.object.r))
+                const a = Vec.add(this.object.pos, Vec.mult(normal, this.object.scale[0]))
+                const b = Vec.sub(collider.object.pos, Vec.mult(normal, collider.object.scale[0]))
                 const collision = {
                     objectA: this.object,
                     objectB: collider.object,
