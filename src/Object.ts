@@ -6,6 +6,7 @@ export class ColliderObject {
     collider?: Collider;
     pos: Vec;
     scale: Vec;
+    mass: number;
     rot: Quaternion;
     constructor () {
         this.pos = new Vec()
@@ -16,7 +17,6 @@ export class ColliderObject {
 export class SolidBodyObject extends ColliderObject {
     vel: Vec;
     acc: Vec;
-    mass: number;
 
     constructor (mass?: number) {
         super()

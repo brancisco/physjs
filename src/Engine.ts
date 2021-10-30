@@ -31,9 +31,6 @@ class CollisionEngine {
                 }
             }
         }
-        if (collisions.length) {
-            console.log(collisions)
-        }
         for (const solver of this.solvers) {
             for (const collision of collisions) {
                 solver.solve(collision, dt)
@@ -45,12 +42,12 @@ class CollisionEngine {
 export default class Engine extends CollisionEngine {
     objects: SolidBodyObject[]
     gravity: Vec;
-    terminalVel: Vec;
+    boundVelocity: [Vec];
 
     constructor (gravity?: Vec) {
         super()
         this.gravity = gravity || new Vec(0, 9.8, 0) // 9.8 is real value
-        this.terminalVel = new Vec(40, 80, 0)
+        this.boundVelocity = [new Vec(120, 120, 0)]
         this.objects = []
         this.solvers = []
     }
@@ -64,7 +61,7 @@ export default class Engine extends CollisionEngine {
     updateObject (object: SolidBodyObject, dt: number) {
         const initVel = object.vel
         object.vel = Vec.add(object.vel, Vec.mult(Vec.add(object.acc, this.gravity), dt))
-        object.vel = Vec.min(object.vel, this.terminalVel)
+        object.vel = Vec.bound(object.vel, ...this.boundVelocity)
         object.pos = Vec.add(object.pos, Vec.mult(Vec.divide(Vec.add(initVel, object.vel), 2), dt))
     }
 }

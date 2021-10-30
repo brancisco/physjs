@@ -22,9 +22,7 @@ export default class Vec extends Array {
 
     public mag(): number {
         return Math.sqrt(
-            Math.pow(this[0], 2) +
-            Math.pow(this[1], 2) +
-            Math.pow(this[2], 2)
+            Vec.dot(this, this)
         )
     }
 
@@ -139,6 +137,33 @@ export default class Vec extends Array {
                 Math.min(v1[2], value)
             ])
         }
+    }
+
+    public static bound (v: Vec, lower: number, upper: number): Vec;
+    public static bound (v: Vec, lower: Vec, upper: Vec): Vec;
+    public static bound (v: Vec, bound: Vec): Vec;
+
+
+    public static bound (v: Vec, lower: any, upper?: any): Vec {
+        if (upper === undefined) {
+            return new Vec(
+                Math.max(Math.min(v[0], lower[0]), -lower[0]),
+                Math.max(Math.min(v[1], lower[1]), -lower[1]),
+                Math.max(Math.min(v[2], lower[2]), -lower[2])
+            )
+        }
+        else if (upper instanceof Vec) {
+            return new Vec(
+                Math.max(Math.min(v[0], upper[0]), lower[0]),
+                Math.max(Math.min(v[1], upper[1]), lower[1]),
+                Math.max(Math.min(v[2], upper[2]), lower[2])
+            )
+        }
+        return new Vec(
+            Math.max(Math.min(v[0], upper), lower),
+            Math.max(Math.min(v[1], upper), lower),
+            Math.max(Math.min(v[2], upper), lower)
+        )
     }
 
 }
