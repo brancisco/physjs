@@ -7,6 +7,7 @@ export class ColliderObject {
     collider?: Collider;
     mass: number;
     transform: Transform;
+
     constructor () {
         this.transform = new Transform()
         this.mass = Number.POSITIVE_INFINITY
@@ -40,11 +41,21 @@ export class ColliderObject {
 export class SolidBodyObject extends ColliderObject {
     vel: Vec;
     acc: Vec;
+    sleeping: boolean;
+    sleepThreshold: number;
+    force: Vec;
 
     constructor (mass?: number) {
         super()
+        this.force = new Vec()
         this.vel = new Vec()
         this.acc = new Vec()
         this.mass = mass || 1
+        this.sleeping = false
+        this.sleepThreshold = 1
+    }
+
+    isSleeping () {
+        return this.sleeping
     }
 }

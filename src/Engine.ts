@@ -20,6 +20,7 @@ class CollisionEngine {
     }
 
     handleCollisions (dt: number) {
+        if (!dt) return;
         const collisions: Collision<ColliderObject>[] = []
         for (const a of this.objects) {
             for (const b of this.objects) {
@@ -47,21 +48,29 @@ export default class Engine extends CollisionEngine {
     constructor (gravity?: Vec) {
         super()
         this.gravity = gravity || new Vec(0, 9.8, 0) // 9.8 is real value
-        this.boundVelocity = [new Vec(120, 120, 0)]
+        this.boundVelocity = [new Vec(200, 200, 0)]
         this.objects = []
         this.solvers = []
     }
 
     step (dt: number) {
+        if (!dt) return;
         for (const object of this.objects) {
-            this.updateObject(object, dt)
+            if (object instanceof SolidBodyObject && !object.isSleeping()) {
+                this.updateObject(object, dt)
+            }
         }
     }
 
     updateObject (object: SolidBodyObject, dt: number) {
         const initVel = object.vel
-        object.vel = Vec.add(object.vel, Vec.mult(Vec.add(object.acc, this.gravity), dt))
+        object.force = Vec.add(object.force, Vec.mult(this.gravity, object.mass))
+        // console.log(object.force)
+        // console.log(Vec.mult(Vec.divide(object.force, object.mass), dt))
+        object.vel = Vec.add(object.vel, Vec.mult(Vec.divide(object.force, object.mass), dt))
+        // console.log(object.vel)
         object.vel = Vec.bound(object.vel, ...this.boundVelocity)
-        object.pos = Vec.add(object.pos, Vec.mult(Vec.divide(Vec.add(initVel, object.vel), 2), dt))
+        object.pos = Vec.add(object.pos, Vec.mult(object.vel, dt))
+        object.force = new Vec()
     }
 }
