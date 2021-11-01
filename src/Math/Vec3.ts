@@ -6,7 +6,7 @@ export default class Vec extends Array {
     constructor(x: any = 0, y: any = 0, z: any = 0) {
         super()
         Object.setPrototypeOf(this, Vec.prototype)
-        if (x instanceof Array) {
+        if (Array.isArray(x)) {
             this[0] = x[0]
             this[1] = x[1]
             this[2] = x[2]
@@ -101,14 +101,14 @@ export default class Vec extends Array {
     public static add (v1: Vec, v2: Vec): Vec
 
     public static add (v1: any, v2: any): Vec {
-        if (v1 instanceof Vec && v2 instanceof Vec) {
+        if (Array.isArray(v1) && Array.isArray(v2)) {
             return new Vec([
                 v1[0] + v2[0],
                 v1[1] + v2[1],
                 v1[2] + v2[2]
             ])
         } else {
-            const [vector, number] = v1 instanceof Vec ? [v1, v2] : [v2, v1]
+            const [vector, number] = Array.isArray(v1) ? [v1, v2] : [v2, v1]
             return new Vec([
                 vector[0] + number,
                 vector[1] + number,
@@ -122,14 +122,14 @@ export default class Vec extends Array {
     public static sub (v1: Vec, v2: Vec): Vec
 
     public static sub (v1: any, v2: any): Vec {
-        if (v1 instanceof Vec && v2 instanceof Vec) {
+        if (Array.isArray(v1) && Array.isArray(v2)) {
             return new Vec([
                 v1[0] - v2[0],
                 v1[1] - v2[1],
                 v1[2] - v2[2]
             ])
         } else {
-            const [vector, number] = v1 instanceof Vec ? [v1, v2] : [v2, v1]
+            const [vector, number] = Array.isArray(v1) ? [v1, v2] : [v2, v1]
             return new Vec([
                 vector[0] - number,
                 vector[1] - number,
@@ -143,14 +143,14 @@ export default class Vec extends Array {
     public static mult (v1: number, value: Vec): Vec;
 
     public static mult (v1: any, v2: any) {
-        if (v1 instanceof Vec && v2 instanceof Vec) {
+        if (Array.isArray(v1) && Array.isArray(v2)) {
             return new Vec([
                 v1[0] * v2[0],
                 v1[1] * v2[1],
                 v1[2] * v2[2]
             ])
         } else {
-            const [vector, number] = v1 instanceof Vec ? [v1, v2] : [v2, v1]
+            const [vector, number] = Array.isArray(v1) ? [v1, v2] : [v2, v1]
             return new Vec([
                 vector[0] * number,
                 vector[1] * number,
@@ -169,14 +169,14 @@ export default class Vec extends Array {
     public static divide (v1: number, v2: Vec): Vec;
 
     public static divide (v1: any, v2: any) {
-        if (v1 instanceof Vec && v2 instanceof Vec) {
+        if (Array.isArray(v1) && Array.isArray(v2)) {
             return new Vec([
                 v1[0] / v2[0],
                 v1[1] / v2[1],
                 v1[2] / v2[2]
             ])
         } else {
-            const [vector, number] = v1 instanceof Vec ? [v1, v2] : [v2, v1]
+            const [vector, number] = Array.isArray(v1) ? [v1, v2] : [v2, v1]
             return new Vec([
                 vector[0] / number,
                 vector[1] / number,
@@ -189,7 +189,7 @@ export default class Vec extends Array {
     public static max (v1: Vec, value: number): Vec;
 
     public static max (v1: Vec, value: any): Vec {
-        if (value instanceof Array) {
+        if (Array.isArray(value)) {
             return new Vec([
                 Math.max(v1[0], value[0]),
                 Math.max(v1[1], value[1]),
@@ -208,7 +208,7 @@ export default class Vec extends Array {
     public static min (v1: Vec, value: number): Vec;
 
     public static min (v1: Vec, value: any): Vec {
-        if (value instanceof Array) {
+        if (Array.isArray(value)) {
             return new Vec([
                 Math.min(v1[0], value[0]),
                 Math.min(v1[1], value[1]),
@@ -236,7 +236,7 @@ export default class Vec extends Array {
                 Math.max(Math.min(v[2], lower[2]), -lower[2])
             )
         }
-        else if (upper instanceof Vec) {
+        else if (Array.isArray(upper)) {
             return new Vec(
                 Math.max(Math.min(v[0], upper[0]), lower[0]),
                 Math.max(Math.min(v[1], upper[1]), lower[1]),

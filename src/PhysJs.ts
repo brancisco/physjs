@@ -1,4 +1,4 @@
-import Vec from './Vec'
+import Vec from '@/Math/Vec3'
 import { SolidBodyObject, ColliderObject } from './Object'
 import Engine from './Engine'
 import { SphereCollider, PlaneCollider } from './Collider'

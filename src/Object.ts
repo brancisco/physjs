@@ -1,6 +1,6 @@
-import Vec from './Vec'
+import Vec from '@/Math/Vec3'
 import { Collider } from './Collider'
-import Quaternion from './Quaternion'
+import Quaternion from '@/Math/Quaternion'
 import Transform from './Transform'
 
 export class ColliderObject {

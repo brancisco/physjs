@@ -1,5 +1,5 @@
-import Vec from './Vec'
-import Quaternion from './Quaternion'
+import Vec from '@/Math/Vec3'
+import Quaternion from '@/Math/Quaternion'
 
 export default class Transform {
     pos: Vec;

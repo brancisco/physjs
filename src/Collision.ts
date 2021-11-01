@@ -1,4 +1,4 @@
-import Vec from './Vec'
+import Vec from '@/Math/Vec3'
 
 export default interface Collision<T> {
     objectA: T;

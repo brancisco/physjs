@@ -1,5 +1,5 @@
 import Collision from './Collision'
-import Vec from './Vec'
+import Vec from '@/Math/Vec3'
 import { ColliderObject, SolidBodyObject } from './Object'
 import { Collider, SphereCollider, PlaneCollider } from './Collider'
 
