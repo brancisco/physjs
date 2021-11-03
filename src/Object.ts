@@ -40,7 +40,7 @@ export class ColliderObject {
 
 export class SolidBodyObject extends ColliderObject {
     vel: Vec;
-    sleeping: boolean;
+    sleeping: number;
     sleepThreshold: number;
     force: Vec;
     gravity: Vec;
@@ -51,11 +51,23 @@ export class SolidBodyObject extends ColliderObject {
         this.vel = new Vec()
         this.gravity = gravity || new Vec()
         this.mass = mass || 1
-        this.sleeping = false
-        this.sleepThreshold = 1
+        this.sleeping = 0 
+        this.sleepThreshold = 2
+    }
+
+    wake () {
+        this.sleeping = 0
+    }
+
+    addSleepTime (time: number) {
+        this.sleeping += time
+    }
+
+    decrementSleepTime (time: number) {
+        this.sleeping = Math.max(0, this.sleeping - time)
     }
 
     isSleeping () {
-        return this.sleeping
+        return this.sleeping > 0
     }
 }
