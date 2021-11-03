@@ -1,17 +1,20 @@
 import { ColliderObject, SolidBodyObject } from './Object'
 import Vec from '@/Math/Vec3'
-import { Solver } from './Solver'
+import { Solver, PositionCorrectionSolver } from './Solver'
 import Collision from './Collision'
 
 class CollisionEngine {
     objects: ColliderObject[]
     solvers: Solver[]
+    dim: 1 | 2 | 3
     constructor () {
         this.objects = []
         this.solvers = []
+        this.dim = 3
     }
 
     addObject (object: ColliderObject) {
+        object.collider.dim = this.dim
         this.objects.push(object)
     }
 
@@ -21,20 +24,24 @@ class CollisionEngine {
 
     handleCollisions (dt: number) {
         if (!dt) return;
-        const collisions: Collision<ColliderObject>[] = []
-        for (const a of this.objects) {
-            for (const b of this.objects) {
-                if (a == b) break;
-                if (!a.collider || !b.collider) continue;
-                const collision = a.collider.test(b.collider)
-                if (collision) {
-                    collisions.push(collision)
+        const n_it = 5;
+        for (let i = 0; i < n_it; i ++) {
+            const collisions: Collision<ColliderObject>[] = []
+            for (const a of this.objects) {
+                for (const b of this.objects) {
+                    if (a == b) break;
+                    if (!a.collider || !b.collider) continue;
+                    const collision = a.collider.test(b.collider)
+                    if (collision) {
+                        collisions.push(collision)
+                    }
                 }
             }
-        }
-        for (const solver of this.solvers) {
-            for (const collision of collisions) {
-                solver.solve(collision, dt)
+            for (const solver of this.solvers) {
+                if (i !== 0 && !(solver instanceof PositionCorrectionSolver)) continue
+                for (const collision of collisions) {
+                    solver.solve(collision, dt)
+                }
             }
         }
     }

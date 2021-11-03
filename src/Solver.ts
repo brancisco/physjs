@@ -37,8 +37,7 @@ export class PositionCorrectionSolver extends Solver {
                    objectB.collider instanceof SphereCollider)) {
             const sphere = (objectA.collider instanceof SphereCollider ? objectA : objectB) as SolidBodyObject;
             const plane = objectA.collider instanceof SphereCollider ? objectB : objectA
-            const velNorm = sphere.vel.normal()
-            sphere.pos = sphere.pos.add(Vec.mult(velNorm, -depth))
+            sphere.pos = sphere.pos.add(normal.mult(depth))
         }
     }
 }
@@ -51,7 +50,6 @@ export class ImpulseSolver extends Solver {
         // we're just doing a sphere for now, but we need to handle all cases
         // console.log(collision)
         const { objectA, objectB, a, b, depth, normal } = collision
-
         if (depth < objectA.sleepThreshold && depth < objectA.sleepThreshold) return;
 
         if (objectA.collider instanceof SphereCollider &&
@@ -69,14 +67,16 @@ export class ImpulseSolver extends Solver {
                    objectB.collider instanceof SphereCollider)) {
             const sphere = (objectA.collider instanceof SphereCollider ? objectA : objectB) as SolidBodyObject;
             const plane = objectA.collider instanceof SphereCollider ? objectB : objectA
-            const velFinal = sphere.vel.sub(normal.mult(2).mult(normal.mult(sphere.vel)))
+            const sphereVelAdjGrav = sphere.vel.add(sphere.gravity.mult(dt/2))
+            const velFinal = sphere.vel.sub(
+                normal.mult(2).mult(normal.dot(sphereVelAdjGrav))
+            ).mult(new Vec([0.95, 0.4, 0.95]))
             sphere.force = Vec.add(sphere.force,
                 Vec.divide(
                     Vec.mult(Vec.sub(velFinal, sphere.vel), sphere.mass),
                     dt
                 )
             )
-            // console.log('sphere.force', sphere.force)
         }
     }
 }

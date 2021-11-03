@@ -1,4 +1,5 @@
 import Vec from '@/Math/Vec3'
+import Quaternion from '@/Math/Quaternion'
 import Collision from './Collision'
 import { ColliderObject, SolidBodyObject } from './Object'
 
@@ -35,34 +36,45 @@ function testBoxVBox (box1: BoxCollider, box2: BoxCollider): Collision<ColliderO
     return collision
 }
 
-function testPlaneVSphere (planeCol: PlaneCollider, sphereCol: SphereCollider): Collision<ColliderObject> | undefined {
+function testPlaneVSphere (planeCol: PlaneCollider, sphereCol: SphereCollider, dim: 1 | 2 | 3): Collision<ColliderObject> | undefined {
     let collision = undefined
     const plane = planeCol.object
     const sphere = sphereCol.object
-    // temp plane normal until we figure out calculations for quaternions
-    const planeNormal = new Vec(0, 1, 0).normal()
-    const dist = Math.abs(Vec.dot(Vec.sub(plane.pos, sphere.pos), planeNormal))
-    if (dist < sphere.scale[0]) {
+
+    const pa = (new Quaternion(0, [plane.scale.x/2, 0, 0])).mult(plane.rot)
+    let zscale = plane.scale.z/2
+    if (dim === 2) {
+        zscale = 1
+    }
+    const pb = (new Quaternion(0, [0, plane.scale.y/2, zscale])).mult(plane.rot)
+    const planeNormal = pa.v.cross(pb.v).normal()
+    let dist = Vec.dot(Vec.sub(plane.pos, sphere.pos), planeNormal)
+    const sign = Math.sign(dist)
+    if (Math.abs(dist) < sphere.scale[0]) {
+        // the planes deepest point
         const a = sphere.pos.add(planeNormal.mult(dist))
-        const b = sphere.pos.add(planeNormal.mult(sphere.scale[0]))
-        const diff = a.sub(b)
+        // the spheres deepest point
+        const b = sphere.pos.add(planeNormal.mult(-1*sphere.scale[0]))
         collision = {
             objectA: plane,
             objectB: sphere,
             a,
             b,
-            depth: diff.mag(),
-            normal: diff.normal(),
+            depth: a.sub(b).mag(),
+            normal: planeNormal,
         }
+
     }
     return collision
 }
 
 export class Collider {
     object: any;
+    dim: 1 | 2 | 3
 
     constructor (object: any) {
         this.object = object
+        this.dim = 3
     }
 
     test (collider: SphereCollider):Collision<ColliderObject> 
@@ -101,9 +113,9 @@ export class SphereCollider extends Collider {
     test (collider: Collider): Collision<ColliderObject> | undefined {
         let collision = undefined
         if (collider instanceof SphereCollider) {
-            return testSphereVSphere(this, collider)
+            collision = testSphereVSphere(this, collider)
         } else if (collider instanceof PlaneCollider) {
-            return testPlaneVSphere(collider, this)
+            collision = testPlaneVSphere(collider, this, this.dim)
         } else if (collider instanceof Collider) {
             console.log('SphereCollider::test -', collider.constructor.name)
         } else {
@@ -133,9 +145,9 @@ export class PlaneCollider extends Collider {
         let collision = undefined
 
         if (collider instanceof SphereCollider) {
-            return testPlaneVSphere(this, collider)
+            collision = testPlaneVSphere(this, collider, this.dim)
         } else if (collider instanceof PlaneCollider) {
-            console.log('PlaneCollider::test -',this.constructor.name)
+            // console.log('PlaneCollider::test -',this.constructor.name)
         } else if (collider instanceof Collider) {
             console.log('PlaneCollider::test -',this.constructor.name)
         } else {
