@@ -96,6 +96,10 @@ export default class Vec extends Array {
         return Vec.dot(this, v)
     }
 
+    public cross (v: Vec): Vec {
+        return Vec.cross(this, v)
+    }
+
     public static add (v1: number, v2: Vec): Vec;
     public static add (v1: Vec, v2: number): Vec;
     public static add (v1: Vec, v2: Vec): Vec
@@ -162,6 +166,14 @@ export default class Vec extends Array {
     public static dot (v1: Vec, v2: Vec): number {
         const mult = Vec.mult(v1, v2)
         return mult[0] + mult[1] + mult[2]
+    }
+
+    public static cross (v1: Vec, v2: Vec): Vec {
+        return new Vec(
+            v1[1]*v2[2] - v1[2]*v2[1],
+            v1[2]*v2[0] - v1[0]*v2[2],
+            v1[0]*v2[1] - v1[1]*v2[0]
+        )
     }
 
     public static divide (v1: Vec, v2: Vec): Vec;

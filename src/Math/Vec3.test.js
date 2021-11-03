@@ -88,8 +88,17 @@ describe('test Vec class', () => {
             expect(vec.divide(b)).toEqual(expected)
         })
 
-        it('should dot another vector', () => {
+        it('should dot product another vector', () => {
             expect(vec.dot(initArr)).toEqual(91)
+        })
+
+        it('should cross product another vector', () => {
+            const vec2 = new Vec(1, 2, 3)
+            expect(vec.cross(vec2)).toEqual([
+                vec.y*vec2.z - vec.z*vec2.y,
+                vec.z*vec2.x - vec.x*vec2.z,
+                vec.x*vec2.y - vec.y*vec2.x
+            ])
         })
 
         it('should return its magnitude', () => {
