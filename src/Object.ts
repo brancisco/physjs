@@ -7,10 +7,12 @@ export class ColliderObject {
     collider?: Collider;
     mass: number;
     transform: Transform;
+    restitution: number;
 
     constructor () {
         this.transform = new Transform()
         this.mass = Number.POSITIVE_INFINITY
+        this.restitution = 0.3
     }
 
     get scale (): Vec {
@@ -35,6 +37,10 @@ export class ColliderObject {
 
     set rot (rot: Quaternion) {
         this.transform.rot = rot
+    }
+
+    get invMass (): number {
+        return 1 / this.mass
     }
 }
 
