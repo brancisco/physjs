@@ -96,7 +96,7 @@ export default class Engine extends CollisionEngine {
             object.addSleepTime(dt*1000)
         }
 
-        object.vel = Vec.add(object.vel, Vec.mult(Vec.divide(object.force, object.mass), dt))
+        object.vel = Vec.add(object.vel, Vec.mult(Vec.mult(object.force, object.invMass), dt))
         object.vel = Vec.bound(object.vel, ...this.boundVelocity)
         object.pos = Vec.add(object.pos, Vec.mult(object.vel, dt))
         object.force = new Vec()
