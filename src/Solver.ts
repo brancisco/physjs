@@ -48,11 +48,14 @@ export class ImpulseSolver extends Solver {
 
         if (objectA.collider instanceof SphereCollider &&
             objectB.collider instanceof SphereCollider) {
-
-            const JNum = Vec.dot(normal, Vec.sub(objectA.vel, objectB.vel))
-            const JDenom = (1 / objectA.mass) + (1 / objectB.mass)
+            const relativeVelocity = Vec.sub(objectB.vel, objectA.vel)
+            const velNormal = normal.dot(relativeVelocity)
+            if (velNormal > 0) return;
+            const e = Math.min(objectA.restitution, objectB.restitution)
+            const JNum = -(1 + e) * velNormal
+            const JDenom = (objectA.invMass) + (objectB.invMass)
             const J = (JNum / JDenom)
-            objectA.force = objectA.force.add(normal.mult(-J).divide(dt))
+            objectA.force = objectA.force.sub(normal.mult(J).divide(dt))
             objectB.force = objectB.force.add(normal.mult(J).divide(dt))
         }
         else if ((objectA.collider instanceof SphereCollider &&
