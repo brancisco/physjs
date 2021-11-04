@@ -20,9 +20,9 @@ export class PositionCorrectionSolver extends Solver {
     constructor () {
         super()
         // percentage amount to correct objects by
-        this.percent = 0.1
+        this.percent = 0.15
         // amount of overlap in objects allowed
-        this.slop = 0.2
+        this.slop = 0.05
     }
     solve (collision: Collision<ColliderObject>, dt: number) {
         const { objectA, objectB, a, b, depth, normal } = collision
@@ -54,40 +54,59 @@ export class PositionCorrectionSolver extends Solver {
 }
 
 export class ImpulseSolver extends Solver {
-    constructor () {
+    rotational: boolean;
+
+    constructor (rotational: boolean = true) {
         super()
+        this.rotational = rotational
     }
+
     solve (collision: Collision<SolidBodyObject>, dt: number) {
         const { objectA, objectB, a, b, depth, normal } = collision
+        let velA = new Vec()
+        let velB = new Vec()
+        if (objectA.vel) {
+            velA = objectA.vel
+        }
+        if (objectB.vel) {
+            velB = objectB.vel
+        }
 
-        if (objectA.collider instanceof SphereCollider &&
-            objectB.collider instanceof SphereCollider) {
-            const relativeVelocity = Vec.sub(objectB.vel, objectA.vel)
-            const velNormal = normal.dot(relativeVelocity)
-            if (velNormal > 0) return;
-            const e = Math.min(objectA.restitution, objectB.restitution)
-            const JNum = -(1 + e) * velNormal
-            const JDenom = (objectA.invMass) + (objectB.invMass)
-            const J = (JNum / JDenom)
-            objectA.force = objectA.force.sub(normal.mult(J).divide(dt))
-            objectB.force = objectB.force.add(normal.mult(J).divide(dt))
+        const relativeVelocity = Vec.sub(velB, velA)
+        const velNormal = normal.dot(relativeVelocity)
+        if (velNormal > 0) return;
+        const e = Math.min(objectA.restitution, objectB.restitution)
+        const JNum = -(1 + e) * velNormal
+        let JDenom = (objectA.invMass + objectB.invMass)
+        let rap, rbp, J
+        if (this.rotational) {
+            // rotational impulse
+            const rap = a.sub(objectA.pos)
+            const rbp = b.sub(objectB.pos)
+            const rapn = rap.cross(normal)
+            const rbpn = rbp.cross(normal)
+            const JDenomRot = rapn.mult(rapn).mult(objectA.invMoi)
+                .add(rbpn.mult(rbpn).mult(objectB.invMoi))
+                .add(JDenom)
+            J = Vec.divide(JNum, JDenomRot)
+            if (objectA.torque) {
+                objectA.torque = objectA.torque.sub(rap.cross(normal.mult(J)).divide(dt))
+            }
+            if (objectB.torque) {
+                objectB.torque = objectB.torque.add(rbp.cross(normal.mult(J)).divide(dt))
+            }
+        } else {
+            J = (JNum / JDenom)
         }
-        else if ((objectA.collider instanceof SphereCollider &&
-                   objectB.collider instanceof PlaneCollider) ||
-                   (objectA.collider instanceof PlaneCollider &&
-                   objectB.collider instanceof SphereCollider)) {
-            const sphere = (objectA.collider instanceof SphereCollider ? objectA : objectB) as SolidBodyObject;
-            const plane = objectA.collider instanceof SphereCollider ? objectB : objectA
-            const sphereVelAdjGrav = sphere.vel.add(sphere.gravity.mult(dt/2))
-            const velFinal = sphere.vel.sub(
-                normal.mult(2).mult(normal.dot(sphereVelAdjGrav))
-            ).mult(new Vec([0.95, 0.4, 0.95]))
-            sphere.force = Vec.add(sphere.force,
-                Vec.divide(
-                    Vec.mult(Vec.sub(velFinal, sphere.vel), sphere.mass),
-                    dt
-                )
-            )
+        // standard impulse
+        if (objectA.force) {
+            objectA.force = objectA.force.sub(normal.mult(J as Vec).divide(dt))
         }
+        if (objectB.force) {
+            objectB.force = objectB.force.add(normal.mult(J as Vec).divide(dt))
+        }
+
+        // friction impulse
+
     }
 }

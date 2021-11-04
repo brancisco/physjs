@@ -6,12 +6,14 @@ import Transform from './Transform'
 export class ColliderObject {
     collider?: Collider;
     mass: number;
+    moi: number;
     transform: Transform;
     restitution: number;
 
     constructor () {
         this.transform = new Transform()
         this.mass = Number.POSITIVE_INFINITY
+        this.moi = Number.POSITIVE_INFINITY
         this.restitution = 0.3
     }
 
@@ -41,6 +43,10 @@ export class ColliderObject {
 
     get invMass (): number {
         return 1 / this.mass
+    }
+
+    get invMoi (): number {
+        return 1 / this.moi
     }
 }
 

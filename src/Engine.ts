@@ -1,5 +1,6 @@
 import { ColliderObject, SolidBodyObject } from './Object'
 import Vec from '@/Math/Vec3'
+import Quaternion from '@/Math/Quaternion'
 import { Solver, PositionCorrectionSolver } from './Solver'
 import Collision from './Collision'
 
@@ -103,9 +104,15 @@ export default class Engine extends CollisionEngine {
             object.addSleepTime(dt*300)
         }
 
-        object.vel = Vec.add(object.vel, Vec.mult(Vec.mult(object.force, object.invMass), dt))
+        object.vel = Vec.add(object.vel, object.force.mult(object.invMass).mult(dt))
         object.vel = Vec.bound(object.vel, ...this.boundVelocity)
         object.pos = Vec.add(object.pos, Vec.mult(object.vel, dt))
+        
+        object.ang = Vec.add(object.ang, object.torque.mult(object.invMoi).mult(dt))
+        object.rot = object.rot.mult(Quaternion.euler(object.ang.mult(dt)))
+        // console.log(object.rot)
+
         object.force = new Vec()
+        object.torque = new Vec()
     }
 }
