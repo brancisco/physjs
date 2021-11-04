@@ -132,12 +132,17 @@ export default class Vec extends Array {
                 v1[1] - v2[1],
                 v1[2] - v2[2]
             ])
-        } else {
-            const [vector, number] = Array.isArray(v1) ? [v1, v2] : [v2, v1]
+        } else if (Array.isArray(v1)) {
             return new Vec([
-                vector[0] - number,
-                vector[1] - number,
-                vector[2] - number
+                v1[0] - v2,
+                v1[1] - v2,
+                v1[2] - v2
+            ])
+        } else {
+            return new Vec([
+                v1 - v2[0],
+                v1 - v2[1],
+                v1 - v2[2]
             ])
         }
     }
@@ -187,12 +192,17 @@ export default class Vec extends Array {
                 v1[1] / v2[1],
                 v1[2] / v2[2]
             ])
-        } else {
-            const [vector, number] = Array.isArray(v1) ? [v1, v2] : [v2, v1]
+        } else if (Array.isArray(v1)) {
             return new Vec([
-                vector[0] / number,
-                vector[1] / number,
-                vector[2] / number
+                v1[0] / v2,
+                v1[1] / v2,
+                v1[2] / v2
+            ])
+        } else {
+            return new Vec([
+                v1 / v2[0],
+                v1 / v2[1],
+                v1 / v2[2]
             ])
         }
     }
