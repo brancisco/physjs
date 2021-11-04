@@ -14,8 +14,15 @@ export class Solver {
 }
 
 export class PositionCorrectionSolver extends Solver {
+    percent: number;
+    slop: number;
+
     constructor () {
         super()
+        // percentage amount to correct objects by
+        this.percent = 0.1
+        // amount of overlap in objects allowed
+        this.slop = 0.2
     }
     solve (collision: Collision<ColliderObject>, dt: number) {
         const { objectA, objectB, a, b, depth, normal } = collision
@@ -23,10 +30,9 @@ export class PositionCorrectionSolver extends Solver {
         if (objectA.collider instanceof SphereCollider &&
             objectB.collider instanceof SphereCollider) {
             const totalMass = objectA.mass + objectB.mass
-            const aPercent = objectA.mass / totalMass
-            const bPercent = objectB.mass / totalMass
-            objectA.pos = objectA.pos.add(normal.mult(-depth*bPercent))
-            objectB.pos = objectB.pos.add(normal.mult(depth*aPercent))
+            const correction = normal.mult(Math.max(depth - this.slop, 0) * totalMass * this.percent)
+            objectA.pos = objectA.pos.sub(correction.mult(objectA.invMass))
+            objectB.pos = objectB.pos.add(correction.mult(objectB.invMass))
         }
         else if ((objectA.collider instanceof SphereCollider &&
                    objectB.collider instanceof PlaneCollider) ||
@@ -36,6 +42,14 @@ export class PositionCorrectionSolver extends Solver {
             const plane = objectA.collider instanceof SphereCollider ? objectB : objectA
             sphere.pos = sphere.pos.add(normal.mult(depth))
         }
+    }
+
+    setSlop (slop: number) {
+        this.slop = Math.min(Math.max(0.01, slop), 0.3)
+    }
+
+    setPercent (percent: number) {
+        this.percent = Math.min(Math.max(0.1, percent), 0.8)
     }
 }
 
