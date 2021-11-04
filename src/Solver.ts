@@ -72,7 +72,7 @@ export class ImpulseSolver extends Solver {
             velB = objectB.vel
         }
 
-        const relativeVelocity = Vec.sub(velB, velA)
+        let relativeVelocity = Vec.sub(velB, velA)
         const velNormal = normal.dot(relativeVelocity)
         if (velNormal > 0) return;
         const e = Math.min(objectA.restitution, objectB.restitution)
@@ -96,17 +96,20 @@ export class ImpulseSolver extends Solver {
                 objectB.torque = objectB.torque.add(rbp.cross(normal.mult(J)).divide(dt))
             }
         } else {
-            J = (JNum / JDenom)
+            let j = JNum / JDenom
+            J = new Vec(j, j, j)
         }
         // standard impulse
         if (objectA.force) {
+            velA = velA.add(normal.mult(J).mult(objectA.invMass))
             objectA.force = objectA.force.sub(normal.mult(J as Vec).divide(dt))
         }
         if (objectB.force) {
+            velB = velB.add(normal.mult(J).mult(objectB.invMass))
             objectB.force = objectB.force.add(normal.mult(J as Vec).divide(dt))
         }
 
-        // friction impulse
-
+        // @TODO: implement friction impulse
+        
     }
 }
