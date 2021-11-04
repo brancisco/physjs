@@ -73,6 +73,13 @@ export default class Engine extends CollisionEngine {
         this.useSleep = true
     }
 
+    addObject (object: ColliderObject) {
+        if (object instanceof SolidBodyObject && !object.gravity) {
+            object.gravity = this.gravity 
+        }
+        super.addObject(object)
+    }
+
     step (dt: number) {
         if (!dt) return;
         for (const object of this.objects) {
@@ -89,11 +96,11 @@ export default class Engine extends CollisionEngine {
     updateObject (object: SolidBodyObject, dt: number) {
         const initVel = object.vel
 
-        object.force = Vec.add(object.force, Vec.mult(this.gravity, object.mass))
+        object.force = Vec.add(object.force, Vec.mult(object.gravity, object.mass))
         if (this.useSleep && !object.isSleeping() && object.force.mag() < object.sleepThreshold) {
             // NOTE: Sleep system doesn't do all that much
             // need to work on all this
-            object.addSleepTime(dt*1000)
+            object.addSleepTime(dt*300)
         }
 
         object.vel = Vec.add(object.vel, Vec.mult(Vec.mult(object.force, object.invMass), dt))
