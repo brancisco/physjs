@@ -18,11 +18,8 @@ export class PositionCorrectionSolver extends Solver {
         super()
     }
     solve (collision: Collision<ColliderObject>, dt: number) {
-        // we're just doing a sphere for now, but we need to handle all cases
-        // console.log(collision)
         const { objectA, objectB, a, b, depth, normal } = collision
 
-        // if (depth < objectA.sleepThreshold && depth < objectA.sleepThreshold) return;
         if (objectA.collider instanceof SphereCollider &&
             objectB.collider instanceof SphereCollider) {
             const totalMass = objectA.mass + objectB.mass
@@ -47,19 +44,16 @@ export class ImpulseSolver extends Solver {
         super()
     }
     solve (collision: Collision<SolidBodyObject>, dt: number) {
-        // we're just doing a sphere for now, but we need to handle all cases
-        // console.log(collision)
         const { objectA, objectB, a, b, depth, normal } = collision
-        if (depth < objectA.sleepThreshold && depth < objectA.sleepThreshold) return;
 
         if (objectA.collider instanceof SphereCollider &&
             objectB.collider instanceof SphereCollider) {
 
             const JNum = Vec.dot(normal, Vec.sub(objectA.vel, objectB.vel))
             const JDenom = (1 / objectA.mass) + (1 / objectB.mass)
-            const J = JNum / JDenom
-            objectA.force = objectA.force.add(Vec.divide(Vec.mult(normal, -J), dt))
-            objectB.force = objectB.force.add(Vec.divide(Vec.mult(normal, J), dt))
+            const J = (JNum / JDenom)
+            objectA.force = objectA.force.add(normal.mult(-J).divide(dt))
+            objectB.force = objectB.force.add(normal.mult(J).divide(dt))
         }
         else if ((objectA.collider instanceof SphereCollider &&
                    objectB.collider instanceof PlaneCollider) ||

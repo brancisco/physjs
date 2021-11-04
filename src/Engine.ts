@@ -8,11 +8,14 @@ class CollisionEngine {
     solvers: Solver[]
     dim: 1 | 2 | 3
     solveStrength: number
+    wakeDepth: number
+
     constructor () {
         this.objects = []
         this.solvers = []
         this.dim = 3
         this.solveStrength = 5
+        this.wakeDepth = 1
     }
 
     addObject (object: ColliderObject) {
@@ -34,10 +37,11 @@ class CollisionEngine {
                     if (!a.collider || !b.collider) continue;
                     const collision = a.collider.test(b.collider)
                     if (collision) {
-                        if (a instanceof SolidBodyObject) {
+                        if (a instanceof SolidBodyObject &&
+                            b instanceof SolidBodyObject &&
+                            collision.depth > this.wakeDepth
+                        ) {
                             a.wake()
-                        }
-                        if (b instanceof SolidBodyObject) {
                             b.wake()
                         }
                         collisions.push(collision)
@@ -58,13 +62,15 @@ export default class Engine extends CollisionEngine {
     objects: SolidBodyObject[]
     gravity: Vec;
     boundVelocity: [Vec];
+    useSleep: boolean;
 
     constructor (gravity?: Vec) {
         super()
-        this.gravity = gravity || new Vec(0, 9.8, 0) // 9.8 is real value
+        this.gravity = gravity || new Vec(0, 9.8, 0)
         this.boundVelocity = [new Vec(200, 200, 0)]
         this.objects = []
         this.solvers = []
+        this.useSleep = true
     }
 
     step (dt: number) {
@@ -84,10 +90,10 @@ export default class Engine extends CollisionEngine {
         const initVel = object.vel
 
         object.force = Vec.add(object.force, Vec.mult(this.gravity, object.mass))
-        if (!object.isSleeping() && object.force.mag() < object.sleepThreshold) {
+        if (this.useSleep && !object.isSleeping() && object.force.mag() < object.sleepThreshold) {
             // NOTE: Sleep system doesn't do all that much
             // need to work on all this
-            object.addSleepTime(dt*5)
+            object.addSleepTime(dt*1000)
         }
 
         object.vel = Vec.add(object.vel, Vec.mult(Vec.divide(object.force, object.mass), dt))

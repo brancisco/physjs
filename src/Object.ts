@@ -40,15 +40,19 @@ export class ColliderObject {
 
 export class SolidBodyObject extends ColliderObject {
     vel: Vec;
+    ang: Vec;
     sleeping: number;
     sleepThreshold: number;
     force: Vec;
+    torque: Vec;
     gravity: Vec;
 
     constructor (mass?: number, gravity?: Vec) {
         super()
         this.force = new Vec()
+        this.torque = new Vec()
         this.vel = new Vec()
+        this.ang = new Vec()
         this.gravity = gravity || new Vec()
         this.mass = mass || 1
         this.sleeping = 0 
